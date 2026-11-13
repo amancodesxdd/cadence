@@ -1,0 +1,15 @@
+$kind: http-request
+name: Create Habit
+method: POST
+url: 'http://localhost:8080/habits'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Morning Run",
+      "description": "Run 5km every morning"
+    }
