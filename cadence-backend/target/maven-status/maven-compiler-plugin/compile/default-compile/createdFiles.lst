@@ -1,0 +1,6 @@
+com\cadence\repository\HabitRepository.class
+com\cadence\controller\HabitController.class
+com\cadence\service\HabitService.class
+com\cadence\controller\TestController.class
+com\cadence\entity\Habit.class
+com\cadence\CadenceApplication.class
