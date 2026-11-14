@@ -1,6 +1,39 @@
-node_modules/
-dist/
-.vite/
-*.local
+# ============================================================
+#  CADENCE - Personal Habit Tracker API
+#  Files Git should NEVER track
+# ============================================================
+
+# --- Maven build output -------------------------------------
+# Maven wipes and rebuilds this folder on every build.
+# It can be 50MB+ of generated .class files. Never commit it.
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Compiled Java classes (if you ever compile by hand outside Maven)
+*.class
+
+# --- Secrets ------------------------------------------------
+# Database passwords, API keys, tokens.
+# NEVER commit these. We keep them in environment variables instead.
+.env
+.env.*
+*.pem
+*.key
+application-local.properties
+application-local.yml
+
+# --- IDEs ----------------------------------------------------
+.idea/
+*.iml
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+*.sts4cache
+
+# --- OS noise ------------------------------------------------
 .DS_Store
+Thumbs.db
 *.log
