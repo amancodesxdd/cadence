@@ -20,8 +20,11 @@ public class Habit {
 
     private LocalDateTime createdAt;
 
+    private boolean pinned = false;
+
+    private boolean archived = false;
+
     public Habit() {
-        // empty constructor needed by Hibernate
     }
 
     public Habit(String name, String description) {
@@ -30,7 +33,6 @@ public class Habit {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -42,4 +44,10 @@ public class Habit {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public boolean isPinned() { return pinned; }
+    public void setPinned(boolean pinned) { this.pinned = pinned; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
 }
