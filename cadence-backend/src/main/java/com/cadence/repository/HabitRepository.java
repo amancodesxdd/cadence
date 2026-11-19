@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HabitRepository extends JpaRepository<Habit, Long> {
 
-    List<Habit> findByNameContainingIgnoreCase(String name);  // ADD THIS
+    List<Habit> findByNameContainingIgnoreCase(String name);
+
+    long countByCategoryId(Long categoryId);
 }
