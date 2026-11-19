@@ -4,6 +4,7 @@ import com.cadence.dto.HabitCompletionRequest;
 import com.cadence.dto.HabitCompletionResponse;
 import com.cadence.service.HabitCompletionService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class HabitCompletionController {
     @DeleteMapping("/{date}")
     public void undoCompletion(
         @PathVariable Long habitId,
-        @PathVariable LocalDate date) {
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         completionService.undoCompletion(habitId, date);
     }
 
@@ -41,7 +42,7 @@ public class HabitCompletionController {
     @GetMapping("/{date}/status")
     public boolean isCompletedOn(
         @PathVariable Long habitId,
-        @PathVariable LocalDate date) {
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return completionService.isCompletedOn(habitId, date);
     }
 }

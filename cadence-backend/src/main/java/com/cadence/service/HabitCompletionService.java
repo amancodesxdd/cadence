@@ -8,6 +8,7 @@ import com.cadence.exception.ResourceNotFoundException;
 import com.cadence.repository.HabitCompletionRepository;
 import com.cadence.repository.HabitRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class HabitCompletionService {
         this.habitRepository = habitRepository;
     }
 
+    @Transactional
     public HabitCompletionResponse markCompleted(Long habitId, HabitCompletionRequest request) {
         Habit habit = habitRepository.findById(habitId)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + habitId));
@@ -42,6 +44,7 @@ public class HabitCompletionService {
         return toResponse(saved);
     }
 
+    @Transactional
     public void undoCompletion(Long habitId, LocalDate date) {
         if (!completionRepository.existsByHabitIdAndCompletionDate(habitId, date)) {
             throw new ResourceNotFoundException("No completion found for habit id: " + habitId + " on date: " + date);

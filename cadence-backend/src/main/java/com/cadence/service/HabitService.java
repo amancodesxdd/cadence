@@ -8,6 +8,7 @@ import com.cadence.exception.ResourceNotFoundException;
 import com.cadence.repository.CategoryRepository;
 import com.cadence.repository.HabitRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,11 +37,13 @@ public class HabitService {
         return toResponse(habit);
     }
 
+    @Transactional
     public HabitResponse createHabit(HabitRequest request) {
         Habit habit = new Habit(request.getName(), request.getDescription());
         return toResponse(habitRepository.save(habit));
     }
 
+    @Transactional
     public HabitResponse updateHabit(Long id, HabitRequest request) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
@@ -49,6 +52,7 @@ public class HabitService {
         return toResponse(habitRepository.save(habit));
     }
 
+    @Transactional
     public void deleteHabit(Long id) {
         if (!habitRepository.existsById(id)) {
             throw new ResourceNotFoundException("Habit not found with id: " + id);
@@ -66,6 +70,7 @@ public class HabitService {
         return habitRepository.count();
     }
 
+    @Transactional
     public HabitResponse togglePin(Long id) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
@@ -73,6 +78,7 @@ public class HabitService {
         return toResponse(habitRepository.save(habit));
     }
 
+    @Transactional
     public HabitResponse toggleArchive(Long id) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
@@ -80,6 +86,7 @@ public class HabitService {
         return toResponse(habitRepository.save(habit));
     }
 
+    @Transactional
     public HabitResponse assignCategory(Long habitId, Long categoryId) {
         Habit habit = habitRepository.findById(habitId)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + habitId));
