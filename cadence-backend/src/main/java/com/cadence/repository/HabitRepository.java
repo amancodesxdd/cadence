@@ -13,4 +13,6 @@ public interface HabitRepository extends JpaRepository<Habit, Long> {
     long countByCategoryId(Long categoryId);
 
     List<Habit> findByCategoryId(Long categoryId);
+
+    List<Habit> findByArchived(boolean archived);
 }

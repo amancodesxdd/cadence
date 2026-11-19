@@ -4,12 +4,15 @@ import com.cadence.dto.HabitRequest;
 import com.cadence.dto.HabitResponse;
 import com.cadence.entity.Category;
 import com.cadence.entity.Habit;
+import com.cadence.entity.HabitCompletion;
 import com.cadence.exception.ResourceNotFoundException;
 import com.cadence.repository.CategoryRepository;
+import com.cadence.repository.HabitCompletionRepository;
 import com.cadence.repository.HabitRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,15 +21,24 @@ public class HabitService {
 
     private final HabitRepository habitRepository;
     private final CategoryRepository categoryRepository;
+    private final HabitCompletionRepository completionRepository;
 
     public HabitService(HabitRepository habitRepository,
-                        CategoryRepository categoryRepository) {
+                        CategoryRepository categoryRepository,
+                        HabitCompletionRepository completionRepository) {
         this.habitRepository = habitRepository;
         this.categoryRepository = categoryRepository;
+        this.completionRepository = completionRepository;
     }
 
     public List<HabitResponse> getAllHabits() {
         return habitRepository.findAll().stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+    }
+
+    public List<HabitResponse> getHabitsByArchivedStatus(boolean archived) {
+        return habitRepository.findByArchived(archived).stream()
             .map(this::toResponse)
             .collect(Collectors.toList());
     }
@@ -194,5 +206,5 @@ public class HabitService {
             habit.isArchived(),
             habit.isPinned()
         );
-    }
+    }  
 }

@@ -21,7 +21,10 @@ public class HabitController {
     }
 
     @GetMapping
-    public List<HabitResponse> listHabits() {
+    public List<HabitResponse> listHabits(@RequestParam(required = false) Boolean archived) {
+        if (archived != null) {
+            return habitService.getHabitsByArchivedStatus(archived);
+        }
         return habitService.getAllHabits();
     }
 
