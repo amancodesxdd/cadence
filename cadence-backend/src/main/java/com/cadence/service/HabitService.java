@@ -59,8 +59,12 @@ public class HabitService {
     public HabitResponse updateHabit(Long id, HabitRequest request) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
-        habit.setName(request.getName());
-        habit.setDescription(request.getDescription());
+        if (request.getName() != null) {
+            habit.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            habit.setDescription(request.getDescription());
+        }
         return toResponse(habitRepository.save(habit));
     }
 
