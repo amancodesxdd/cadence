@@ -11,4 +11,6 @@ public interface HabitRepository extends JpaRepository<Habit, Long> {
     List<Habit> findByNameContainingIgnoreCase(String name);
 
     long countByCategoryId(Long categoryId);
+
+    List<Habit> findByCategoryId(Long categoryId);
 }

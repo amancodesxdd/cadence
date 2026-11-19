@@ -2,8 +2,10 @@ package com.cadence.service;
 
 import com.cadence.dto.HabitRequest;
 import com.cadence.dto.HabitResponse;
+import com.cadence.entity.Category;
 import com.cadence.entity.Habit;
 import com.cadence.exception.ResourceNotFoundException;
+import com.cadence.repository.CategoryRepository;
 import com.cadence.repository.HabitRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,12 @@ import java.util.stream.Collectors;
 public class HabitService {
 
     private final HabitRepository habitRepository;
+    private final CategoryRepository categoryRepository;
 
-    public HabitService(HabitRepository habitRepository) {
+    public HabitService(HabitRepository habitRepository,
+                        CategoryRepository categoryRepository) {
         this.habitRepository = habitRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<HabitResponse> getAllHabits() {
@@ -73,6 +78,30 @@ public class HabitService {
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
         habit.setArchived(!habit.isArchived());
         return toResponse(habitRepository.save(habit));
+    }
+
+    public HabitResponse assignCategory(Long habitId, Long categoryId) {
+        Habit habit = habitRepository.findById(habitId)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + habitId));
+
+        Category category = null;
+        if (categoryId != null) {
+            category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
+        }
+
+        habit.setCategory(category);
+        return toResponse(habitRepository.save(habit));
+    }
+
+    public List<HabitResponse> getHabitsByCategory(Long categoryId) {
+        // Verify category exists
+        categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
+
+        return habitRepository.findByCategoryId(categoryId).stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
     }
 
     private HabitResponse toResponse(Habit habit) {

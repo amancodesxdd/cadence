@@ -1,5 +1,6 @@
 package com.cadence.controller;
 
+import com.cadence.dto.HabitCategoryAssignmentRequest;
 import com.cadence.dto.HabitRequest;
 import com.cadence.dto.HabitResponse;
 import com.cadence.service.HabitService;
@@ -63,5 +64,16 @@ public class HabitController {
     @PutMapping("/{id}/archive")
     public HabitResponse archiveHabit(@PathVariable Long id) {
         return habitService.toggleArchive(id);
+    }
+
+    @PutMapping("/{habitId}/category")
+    public HabitResponse assignCategory(@PathVariable Long habitId,
+                                        @RequestBody HabitCategoryAssignmentRequest request) {
+        return habitService.assignCategory(habitId, request.getCategoryId());
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public List<HabitResponse> getHabitsByCategory(@PathVariable Long categoryId) {
+        return habitService.getHabitsByCategory(categoryId);
     }
 }
