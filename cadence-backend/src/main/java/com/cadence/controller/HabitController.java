@@ -1,12 +1,16 @@
 package com.cadence.controller;
 
-import java.util.List;
-
-import com.cadence.entity.Habit;
+import com.cadence.dto.HabitRequest;
+import com.cadence.dto.HabitResponse;
 import com.cadence.service.HabitService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequestMapping("/api/habits")
 public class HabitController {
 
     private final HabitService habitService;
@@ -15,48 +19,49 @@ public class HabitController {
         this.habitService = habitService;
     }
 
-    @GetMapping("/api/habits")
-    public List<Habit> listHabits() {
+    @GetMapping
+    public List<HabitResponse> listHabits() {
         return habitService.getAllHabits();
     }
 
-    @GetMapping("/api/habits/{id}")
-    public Habit getHabit(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public HabitResponse getHabit(@PathVariable Long id) {
         return habitService.getHabitById(id);
     }
 
-    @PostMapping("/api/habits")
-    public Habit createHabit(@RequestBody String name) {
-        return habitService.createHabit(name);
+    @PostMapping
+    public HabitResponse createHabit(@Valid @RequestBody HabitRequest request) {
+        return habitService.createHabit(request);
     }
 
-    @PutMapping("/api/habits/{id}")
-    public Habit updateHabit(@PathVariable Long id, @RequestBody String name) {
-        return habitService.updateHabit(id, name);
+    @PutMapping("/{id}")
+    public HabitResponse updateHabit(@PathVariable Long id, @Valid @RequestBody HabitRequest request) {
+        return habitService.updateHabit(id, request);
     }
 
-    @DeleteMapping("/api/habits/{id}")
-    public void deleteHabit(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHabit(@PathVariable Long id) {
         habitService.deleteHabit(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/api/habits/search")
-    public List<Habit> searchHabits(@RequestParam String name) {
+    @GetMapping("/search")
+    public List<HabitResponse> searchHabits(@RequestParam String name) {
         return habitService.searchHabits(name);
     }
 
-    @GetMapping("/api/habits/count")
+    @GetMapping("/count")
     public long countHabits() {
         return habitService.countHabits();
     }
 
-    @PutMapping("/api/habits/{id}/pin")
-    public Habit pinHabit(@PathVariable Long id) {
+    @PutMapping("/{id}/pin")
+    public HabitResponse pinHabit(@PathVariable Long id) {
         return habitService.togglePin(id);
     }
 
-    @PutMapping("/api/habits/{id}/archive")
-    public Habit archiveHabit(@PathVariable Long id) {
+    @PutMapping("/{id}/archive")
+    public HabitResponse archiveHabit(@PathVariable Long id) {
         return habitService.toggleArchive(id);
     }
 }

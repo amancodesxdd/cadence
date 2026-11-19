@@ -1,11 +1,14 @@
 package com.cadence.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.cadence.dto.HabitRequest;
+import com.cadence.dto.HabitResponse;
 import com.cadence.entity.Habit;
+import com.cadence.exception.ResourceNotFoundException;
 import com.cadence.repository.HabitRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HabitService {
@@ -16,59 +19,70 @@ public class HabitService {
         this.habitRepository = habitRepository;
     }
 
-    public List<Habit> getAllHabits() {
-        return habitRepository.findAll();
+    public List<HabitResponse> getAllHabits() {
+        return habitRepository.findAll().stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
     }
 
-    public Habit getHabitById(Long id) {
-        Optional<Habit> optional = habitRepository.findById(id);
-        return optional.orElse(null);
+    public HabitResponse getHabitById(Long id) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        return toResponse(habit);
     }
 
-    public Habit createHabit(String name) {
-        Habit habit = new Habit(name, null);
-        return habitRepository.save(habit);
+    public HabitResponse createHabit(HabitRequest request) {
+        Habit habit = new Habit(request.getName(), request.getDescription());
+        return toResponse(habitRepository.save(habit));
     }
 
-    public Habit updateHabit(Long id, String name) {
-        Optional<Habit> optional = habitRepository.findById(id);
-        if (optional.isPresent()) {
-            Habit habit = optional.get();
-            habit.setName(name);
-            return habitRepository.save(habit);
-        }
-        return null;
+    public HabitResponse updateHabit(Long id, HabitRequest request) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        habit.setName(request.getName());
+        habit.setDescription(request.getDescription());
+        return toResponse(habitRepository.save(habit));
     }
 
     public void deleteHabit(Long id) {
+        if (!habitRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Habit not found with id: " + id);
+        }
         habitRepository.deleteById(id);
     }
 
-    public List<Habit> searchHabits(String name) {
-        return habitRepository.findByNameContainingIgnoreCase(name);
+    public List<HabitResponse> searchHabits(String name) {
+        return habitRepository.findByNameContainingIgnoreCase(name).stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
     }
 
     public long countHabits() {
         return habitRepository.count();
     }
 
-    public Habit togglePin(Long id) {
-        Optional<Habit> optional = habitRepository.findById(id);
-        if (optional.isPresent()) {
-            Habit habit = optional.get();
-            habit.setPinned(!habit.isPinned());
-            return habitRepository.save(habit);
-        }
-        return null;
+    public HabitResponse togglePin(Long id) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        habit.setPinned(!habit.isPinned());
+        return toResponse(habitRepository.save(habit));
     }
 
-    public Habit toggleArchive(Long id) {
-        Optional<Habit> optional = habitRepository.findById(id);
-        if (optional.isPresent()) {
-            Habit habit = optional.get();
-            habit.setArchived(!habit.isArchived());
-            return habitRepository.save(habit);
-        }
-        return null;
+    public HabitResponse toggleArchive(Long id) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        habit.setArchived(!habit.isArchived());
+        return toResponse(habitRepository.save(habit));
+    }
+
+    private HabitResponse toResponse(Habit habit) {
+        return new HabitResponse(
+            habit.getId(),
+            habit.getName(),
+            habit.getDescription(),
+            habit.getCreatedAt(),
+            habit.isArchived(),
+            habit.isPinned()
+        );
     }
 }
