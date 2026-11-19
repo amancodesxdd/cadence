@@ -70,19 +70,93 @@ public class HabitService {
         return habitRepository.count();
     }
 
+    public int getCurrentStreak(Long habitId) {
+        // Verify habit exists
+        habitRepository.findById(habitId)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + habitId));
+
+        // Get completions newest to oldest
+        List<HabitCompletion> completions = completionRepository.findByHabitIdOrderByCompletionDateDesc(habitId);
+
+        if (completions.isEmpty()) {
+            return 0;
+        }
+
+        LocalDate today = LocalDate.now();
+        int streak = 0;
+        LocalDate expectedDate = today;
+
+        for (HabitCompletion completion : completions) {
+            if (completion.getCompletionDate().equals(expectedDate)) {
+                streak++;
+                expectedDate = expectedDate.minusDays(1);
+            } else {
+                break;
+            }
+        }
+
+        return streak;
+    }
+
+    public int getLongestStreak(Long habitId) {
+        // Verify habit exists
+        habitRepository.findById(habitId)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + habitId));
+
+        // Get completions oldest to newest
+        List<HabitCompletion> completions = completionRepository.findByHabitIdOrderByCompletionDateAsc(habitId);
+
+        if (completions.isEmpty()) {
+            return 0;
+        }
+
+        int maxStreak = 0;
+        int currentStreak = 0;
+        LocalDate previousDate = null;
+
+        for (HabitCompletion completion : completions) {
+            LocalDate date = completion.getCompletionDate();
+            if (previousDate == null || date.equals(previousDate.plusDays(1))) {
+                currentStreak++;
+            } else {
+                currentStreak = 1;
+            }
+            maxStreak = Math.max(maxStreak, currentStreak);
+            previousDate = date;
+        }
+
+        return maxStreak;
+    }
+
     @Transactional
-    public HabitResponse togglePin(Long id) {
+    public HabitResponse pinHabit(Long id) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
-        habit.setPinned(!habit.isPinned());
+        habit.setPinned(true);
         return toResponse(habitRepository.save(habit));
     }
 
     @Transactional
-    public HabitResponse toggleArchive(Long id) {
+    public HabitResponse unpinHabit(Long id) {
         Habit habit = habitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
-        habit.setArchived(!habit.isArchived());
+        habit.setPinned(false);
+        return toResponse(habitRepository.save(habit));
+    }
+
+    @Transactional
+    public HabitResponse archiveHabit(Long id) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        habit.setArchived(true);
+        return toResponse(habitRepository.save(habit));
+    }
+
+    @Transactional
+    public HabitResponse restoreHabit(Long id) {
+        Habit habit = habitRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habit not found with id: " + id));
+        habit.setArchived(false);
         return toResponse(habitRepository.save(habit));
     }
 

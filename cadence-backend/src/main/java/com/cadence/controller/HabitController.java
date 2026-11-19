@@ -58,12 +58,32 @@ public class HabitController {
 
     @PutMapping("/{id}/pin")
     public HabitResponse pinHabit(@PathVariable Long id) {
-        return habitService.togglePin(id);
+        return habitService.pinHabit(id);
+    }
+
+    @PutMapping("/{id}/unpin")
+    public HabitResponse unpinHabit(@PathVariable Long id) {
+        return habitService.unpinHabit(id);
     }
 
     @PutMapping("/{id}/archive")
     public HabitResponse archiveHabit(@PathVariable Long id) {
-        return habitService.toggleArchive(id);
+        return habitService.archiveHabit(id);
+    }
+
+    @PutMapping("/{id}/restore")
+    public HabitResponse restoreHabit(@PathVariable Long id) {
+        return habitService.restoreHabit(id);
+    }
+
+    @GetMapping("/{id}/streaks/current")
+    public int getCurrentStreak(@PathVariable Long id) {
+        return habitService.getCurrentStreak(id);
+    }
+
+    @GetMapping("/{id}/streaks/longest")
+    public int getLongestStreak(@PathVariable Long id) {
+        return habitService.getLongestStreak(id);
     }
 
     @PutMapping("/{habitId}/category")
